@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Manage Products</h1>
+        <button onclick="window.location.href='admin-dashboard.html'">Back to Dashboard</button>
+    </header>
+    <main>
+        <section id="products-list">
+            <h2>Products</h2>
+            <button onclick="openAddProductModal()">Add Product</button>
+            <div id="products-container"></div> <!-- Products will be dynamically inserted here -->
+        </section>
+
+        <!-- Add Product Modal -->
+        <div id="add-product-modal" style="display: none;">
+            <h2>Add Product</h2>
+            <form id="add-product-form">
+                <input type="text" id="product-name" placeholder="Product Name" required>
+                <input type="number" id="product-price" placeholder="Price" required>
+                <input type="text" id="product-image" placeholder="Image URL" required>
+                <textarea id="product-description" placeholder="Description" required></textarea>
+                <input type="text" id="product-sizes" placeholder="Sizes (comma-separated)" required>
+                <button type="submit">Add Product</button>
+                <button type="button" onclick="closeAddProductModal()">Cancel</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Fetch and display products
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/admin/products', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                if (!response.ok) throw new Error('Failed to fetch products');
+                const products = await response.json();
+                displayProducts(products);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                alert('Failed to fetch products. Please try again.');
+            }
+        }
+
+        // Display products
+        function displayProducts(products) {
+            const productsContainer = document.getElementById('products-container');
+            productsContainer.innerHTML = '';
+
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product-item';
+                productDiv.innerHTML = `
+                    <h3>${product.Name}</h3>
+                    <p>Price: $${product.Price}</p>
+                    <p>Description: ${product.Description}</p>
+                    <p>Sizes: ${product.sizes.join(', ')}</p>
+                    <button onclick="deleteProduct('${product.ProductID}')">Delete</button>
+                `;
+                productsContainer.appendChild(productDiv);
+            });
+        }
+
+        // Add product
+        async function addProduct(event) {
+            event.preventDefault();
+            const name = document.getElementById('product-name').value;
+            const price = document.getElementById('product-price').value;
+            const imageURL = document.getElementById('product-image').value;
+            const description = document.getElementById('product-description').value;
+            const sizes = document.getElementById('product-sizes').value.split(',');
+
+            try {
+                const response = await fetch('/api/admin/products/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({ name, price, imageURL, description, sizes }),
+                });
+                if (!response.ok) throw new Error('Failed to add product');
+                alert('Product added successfully');
+                closeAddProductModal();
+                fetchProducts();
+            } catch (error) {
+                console.error('Error adding product:', error);
+                alert('Failed to add product. Please try again.');
+            }
+        }
+
+        // Delete product
+        async function deleteProduct(productId) {
+            try {
+                const response = await fetch(`/api/admin/products/delete/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                if (!response.ok) throw new Error('Failed to delete product');
+                alert('Product deleted successfully');
+                fetchProducts();
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Failed to delete product. Please try again.');
+            }
+        }
+
+        // Open add product modal
+        function openAddProductModal() {
+            document.getElementById('add-product-modal').style.display = 'block';
+        }
+
+        // Close add product modal
+        function closeAddProductModal() {
+            document.getElementById('add-product-modal').style.display = 'none';
+        }
+
+        // Event listener for add product form
+        document.getElementById('add-product-form').addEventListener('submit', addProduct);
+
+        // Fetch products when the page loads
+        fetchProducts();
+    </script>
+</body>
+</html>

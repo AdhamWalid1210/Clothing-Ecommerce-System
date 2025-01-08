@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <button id="logout-button" onclick="logout()">Logout</button>
+    </header>
+    <main>
+        <!-- Manage Users Section -->
+        <section>
+            <h2>Manage Users</h2>
+            <button onclick="window.location.href='manage-users.html'">Manage Users</button>
+        </section>
+
+        <!-- Manage Products Section -->
+        <section>
+            <h2>Manage Products</h2>
+            <button onclick="window.location.href='manage-products.html'">Manage Products</button>
+        </section>
+
+        <!-- Manage Orders Section -->
+        <section>
+            <h2>Manage Orders</h2>
+            <button onclick="window.location.href='manage-orders.html'">Manage Orders</button>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token'); // Remove the token from localStorage
+            window.location.href = 'auth.html'; // Redirect to the login page
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Checkout</h1>
+    <a href="cart.html">Back to Cart</a>
+  </header>
+  <main>
+    <form id="checkout-form">
+      <h2>Shipping Details</h2>
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="text" id="address" placeholder="Shipping Address" required>
+      <input type="text" id="city" placeholder="City" required>
+      <input type="text" id="zip" placeholder="ZIP Code" required>
+
+      <h2>Payment Method</h2>
+      <select id="payment-method" required>
+        <option value="">Select Payment Method</option>
+        <option value="COD">Cash on Delivery</option>
+        <option value="Visa">Visa</option>
+      </select>
+
+      <button type="submit">Place Order</button>
+    </form>
+    <div id="order-confirmation" style="display: none;">
+      <h2>Order Placed Successfully!</h2>
+      <p>Thank you for your purchase.</p>
+      <a href="index.html">Return to Home</a>
+    </div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

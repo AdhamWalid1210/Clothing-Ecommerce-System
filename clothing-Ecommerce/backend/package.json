@@ -1,0 +1,55 @@
+{
+  "name": "clothing-ecommerce",
+  "version": "1.0.0",
+  "description": "Clothing E-Commerce Backend",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{js,json}\"",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "mssql": "^8.1.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^8.5.1",
+    "body-parser": "^1.19.0",
+    "morgan": "^1.10.0",
+    "helmet": "^4.6.0",
+    "compression": "^1.7.4",
+    "swagger-ui-express": "^4.6.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "eslint": "^8.0.0",
+    "prettier": "^2.4.1",
+    "husky": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/clothing-ecommerce.git"
+  },
+  "keywords": [
+    "ecommerce",
+    "clothing",
+    "nodejs",
+    "express",
+    "backend"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yourusername/clothing-ecommerce/issues"
+  },
+  "homepage": "https://github.com/yourusername/clothing-ecommerce#readme"
+}

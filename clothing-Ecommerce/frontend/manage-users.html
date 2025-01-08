@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        header button {
+            background-color: #ff4a3d;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        main {
+            padding: 2rem;
+        }
+        #users-list {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #users-list h2 {
+            margin-top: 0;
+        }
+        #users-container {
+            margin-top: 1rem;
+        }
+        .user-item {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .user-item h3 {
+            margin: 0;
+        }
+        .user-item p {
+            margin: 0.5rem 0;
+        }
+        .user-item button {
+            background-color: #ff4a3d;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        #add-user-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        #add-user-modal h2 {
+            margin-top: 0;
+        }
+        #add-user-form input,
+        #add-user-form select {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #add-user-form button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Manage Users</h1>
+        <button onclick="window.location.href='admin-dashboard.html'">Back to Dashboard</button>
+    </header>
+    <main>
+        <section id="users-list">
+            <h2>Users</h2>
+            <button onclick="openAddUserModal()">Add User</button>
+            <div id="users-container"></div> <!-- Users will be dynamically inserted here -->
+        </section>
+
+        <!-- Add User Modal -->
+        <div id="add-user-modal">
+            <h2>Add User</h2>
+            <form id="add-user-form">
+                <input type="text" id="name" placeholder="Name" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <select id="role">
+                    <option value="customer">Customer</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <button type="submit">Add User</button>
+                <button type="button" onclick="closeAddUserModal()">Cancel</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Fetch and display users
+        async function fetchUsers() {
+            try {
+                const response = await fetch('/api/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                if (!response.ok) throw new Error('Failed to fetch users');
+                const users = await response.json();
+                displayUsers(users);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                alert('Failed to fetch users. Please try again.');
+            }
+        }
+
+        // Display users
+        function displayUsers(users) {
+            const usersContainer = document.getElementById('users-container');
+            usersContainer.innerHTML = '';
+
+            users.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'user-item';
+                userDiv.innerHTML = `
+                    <h3>${user.Name}</h3>
+                    <p>Email: ${user.Email}</p>
+                    <p>Role: ${user.Role}</p>
+                    <button onclick="deleteUser('${user.UserID}')">Delete</button>
+                `;
+                usersContainer.appendChild(userDiv);
+            });
+        }
+
+        // Add user
+        async function addUser(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            try {
+                const response = await fetch('/api/admin/users/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({ name, email, password, role }),
+                });
+                if (!response.ok) throw new Error('Failed to add user');
+                alert('User added successfully');
+                closeAddUserModal();
+                fetchUsers(); // Refresh the user list
+            } catch (error) {
+                console.error('Error adding user:', error);
+                alert('Failed to add user. Please try again.');
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId) {
+            try {
+                const response = await fetch(`/api/admin/users/delete/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                if (!response.ok) throw new Error('Failed to delete user');
+                alert('User deleted successfully');
+                fetchUsers(); // Refresh the user list
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                alert('Failed to delete user. Please try again.');
+            }
+        }
+
+        // Open add user modal
+        function openAddUserModal() {
+            document.getElementById('add-user-modal').style.display = 'block';
+        }
+
+        // Close add user modal
+        function closeAddUserModal() {
+            document.getElementById('add-user-modal').style.display = 'none';
+        }
+
+        // Event listener for add user form
+        document.getElementById('add-user-form').addEventListener('submit', addUser);
+
+        // Fetch users when the page loads
+        fetchUsers();
+    </script>
+</body>
+</html>
